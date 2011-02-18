@@ -9,25 +9,15 @@ use JSON::XS;
 use HTTP::Request::Common;
 use XML::Simple;
 
-=head1 SYNOPSIS
+# ABSTRACT: Connect to the Capsule API (www.capsulecrm.com)
 
-Connect to the Capsule API (www.capsulecrm.com)
+=head1 SYNOPSIS
 
 my $foo = Net::CapsuleCRM->new(
   token => 'xxxx',
   target_domain => 'test.capsulecrm.com',
   debug => 0,
 );
-
-=head2 login
-
-This sets up the initial OAuth handshake and returns the login URL. This
-URL has to be clicked by the user and the the user then has to accept
-the application in xero. 
-
-Xero then redirects back to the callback URL defined with
-C<$self-E<gt>callback_url>. If the user already accepted the application the
-redirect may happen without the user actually clicking anywhere.
 
 =cut
 
@@ -104,6 +94,13 @@ method _talk($command,$method,$content?) {
   
 }
 
+
+=head2 find_party_by_email
+
+find by email
+
+=cut
+
 method find_party_by_email($email) {
   my $res = $self->_talk('party', 'GET', {
     email => $email,
@@ -112,19 +109,63 @@ method find_party_by_email($email) {
   return $res->{'parties'}->{'person'}->{'id'} || undef;
 }
 
+=head2 find_party
+
+find by id
+
+=cut
+
 method find_party($id) {
   my $res = $self->_talk('party/'.$id, 'GET', $id);
   return $res->{'parties'}->{'person'}->{'id'} || undef;
 }
 
+
+=head2 create_person
+
+$cap->create_person({
+  contacts => {
+    email => {
+      emailAddress => 'xxx',
+    },
+    address => {
+      type => 'xxx',
+      street => "xxx",
+      city => 'xxx',
+      zip => 'xxx',
+      country => 'xxx',
+    },
+    phone => {
+      type => 'Home',
+      phoneNumber => '123456',
+    },
+  },
+  title => 'Mr',
+  firstName => 'Simon',
+  lastName => 'Elliott',
+});
+
+=cut
+
 method create_person($data) {
   return $self->_talk('person', 'POST', $data);
 }
+
+=head2 create_organization
+
+See Person
+
+=cut
 
 method create_organisation($data) {
   return $self->_talk('organisation', 'POST', $data);
 }
 
+=head2 add_tag
+
+$cap->add_tag($person_id,'rich','stupid');
+
+=cut
 method add_tag($id, @tags) {
   # my $data = $self->xmls->XMLout(
   #   { tag => [ map { name => $_ }, @tags ] }, RootName => 'tags'
