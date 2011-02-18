@@ -1,0 +1,35 @@
+NAME
+    Net::CapsuleCRM - Connect to the Capsule API (www.capsulecrm.com)
+
+SYNOPSIS
+    my $foo = Net::CapsuleCRM->new( token => 'xxxx', target_domain =>
+    'test.capsulecrm.com', debug => 0, );
+
+  find_party_by_email
+    find by email
+
+  find_party
+    find by id
+
+  create_person
+    $cap->create_person({ contacts => { email => { emailAddress => 'xxx', },
+    address => { type => 'xxx', street => "xxx", city => 'xxx', zip =>
+    'xxx', country => 'xxx', }, phone => { type => 'Home', phoneNumber =>
+    '123456', }, }, title => 'Mr', firstName => 'Simon', lastName =>
+    'Elliott', });
+
+  create_organization
+    See Person
+
+  add_tag
+    $cap->add_tag($person_id,'rich','stupid');
+
+AUTHOR
+    Simon Elliott <cpan@papercreatures.com>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2011 by Simon Elliott.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+
