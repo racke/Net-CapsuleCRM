@@ -22,7 +22,7 @@ SYNOPSIS
     See Person
 
   add_tag
-    $cap->add_tag($person_id,'rich','stupid');
+    $cap->add_tag($person_id,'customer','difficult');
 
 AUTHOR
     Simon Elliott <cpan@papercreatures.com>
