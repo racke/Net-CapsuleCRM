@@ -175,7 +175,7 @@ method create_organisation($data) {
 
 =head2 add_tag
 
-$cap->add_tag($person_id,'rich','stupid');
+$cap->add_tag($person_id,'customer','difficult');
 
 =cut
 method add_tag($id, @tags) {
