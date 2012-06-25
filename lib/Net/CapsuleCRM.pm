@@ -6,6 +6,7 @@ use Moo;
 use Sub::Quote;
 use Method::Signatures;
 use JSON::XS;
+use LWP::UserAgent;
 use HTTP::Request::Common;
 use XML::Simple;
 
@@ -170,7 +171,7 @@ See Person
 =cut
 
 method create_organisation($data) {
-  return $self->_talk('organisation', 'POST', $data);
+  return $self->_talk('organisation', 'POST', { organisation => $data } );
 }
 
 =head2 add_tag
