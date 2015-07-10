@@ -5,7 +5,7 @@ use warnings;
 use Moo;
 use Sub::Quote;
 use Method::Signatures;
-use JSON::XS;
+use Cpanel::JSON::XS;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use XML::Simple;
