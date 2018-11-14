@@ -31,7 +31,7 @@ has 'xmls' => ( is => 'rw', default => sub { return XML::Simple->new(
   NoAttr => 1, KeyAttr => [], XMLDecl => 1, SuppressEmpty => 1, ); }
 );
 
-method endpoint_uri { return 'https://' . $self->target_domain . '/api/'; }
+method endpoint_uri { return 'https://' . $self->target_domain . '/api/v2/'; }
 
 method _talk($command,$method,$content?) {
   my $uri = URI->new($self->endpoint_uri);
