@@ -16,7 +16,6 @@ use XML::Simple;
 
 my $foo = Net::CapsuleCRM->new(
   token => 'xxxx',
-  target_domain => 'test.capsulecrm.com',
   debug => 0,
 );
 
@@ -27,7 +26,7 @@ has 'error' => (is => 'rw', predicate => 'has_error');
 has 'token' => (is => 'rw', required => 1);
 has 'ua' => (is => 'rw', 
   default => sub { LWP::UserAgent->new( agent => 'Perl Net-CapsuleCRM'); } );
-has 'target_domain' => (is => 'rw', default => sub { 'test.capsulecrm.com' } );
+has 'target_domain' => (is => 'rw', default => sub { 'api2.capsulecrm.com' } );
 has 'xmls' => ( is => 'rw', default => sub { return XML::Simple->new(
   NoAttr => 1, KeyAttr => [], XMLDecl => 1, SuppressEmpty => 1, ); }
 );
