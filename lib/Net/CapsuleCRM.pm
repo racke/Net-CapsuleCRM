@@ -34,16 +34,13 @@ has 'xmls' => ( is => 'rw', default => sub { return XML::Simple->new(
 method endpoint_uri { return 'https://' . $self->target_domain . '/api/v2/'; }
 
 method _talk($command,$method,$content?) {
-  my $uri = URI->new($self->endpoint_uri);
-  $uri->path("api/$command");
+    my $uri = URI->new($self->endpoint_uri);
+    my $uri_path = $uri->path;
 
-  $self->ua->credentials( 
-    $uri->host . ':'.$uri->port,
-    'seamApp',
-    $self->token => 'x'
-  );
-  
-  print "$uri\n" if $self->debug;
+    # append command
+    $uri->path($uri_path . $command);
+
+    print "Uri: $uri\n" if $self->debug;
 
   my $res;
   my $type = ref $content  eq 'HASH' ? 'json' : 'xml';
@@ -51,11 +48,22 @@ method _talk($command,$method,$content?) {
     if(ref $content eq 'HASH') {
       $uri->query_form($content);
     }
-    $res = $self->ua->request(
-      GET $uri, #content is ID in this instance.
-      Accept => 'application/json', 
-      Content_Type => 'application/json',
+    my $token = $self->token;
+    my $request = HTTP::Request->new(
+        GET => $uri, [
+            Host => 'api.capsulecrm.com',
+            Authorization => "Bearer $token"],
     );
+
+    if ($self->debug) {
+        print "Request: ", $request->as_string, "\n";
+    }
+
+    $res = $self->ua->request($request);
+
+    if ($self->debug) {
+        print "Response: ", $res->as_string, "\n";
+    }
   } else {
     #$content = $self->_template($content) if $content;
     if($type eq 'json') {
