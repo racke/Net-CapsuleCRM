@@ -292,4 +292,63 @@ method custom_fields_definitions ($entity, $cache = 1) {
     return $defs;
 }
 
+=head2 update_custom_fields
+
+Updates values of custom fields belonging to entity C<$entity> and id C<$id>.
+
+C<$values> is a hash reference with the custom field names as keys and the new
+value for the custom field as values.
+
+It is sufficient to pass only the custom fields with new or updated values.
+
+=cut
+
+method update_custom_fields($entity, $id, $values) {
+    my $defs = $self->custom_fields_definitions( $entity );
+    my $current_values;
+    my @updated_values;
+
+    # validation of custom field names
+    for my $cf_name (keys %$values) {
+        unless (exists $defs->{$cf_name}) {
+            die "No such custom field name '$cf_name' for entity $entity.";
+        }
+    }
+
+    $current_values = $self->_talk("$entity/$id", 'GET', {embed => 'fields'});
+
+    # turn into a hash
+    my %custom_fields;
+
+    for my $entry (@{$current_values->{fields}}) {
+        my $name = delete $entry->{name};
+
+        $custom_fields{$name} = $entry;
+    }
+
+    while (my ($cf_name, $cf_value) = each %$values) {
+        my $cf_def = $defs->{$cf_name};
+        my $cf_struct = {
+            definition => {
+                id => $cf_def->{id},
+                name => $cf_name,
+            },
+            value => $cf_value,
+        };
+
+        # Add id of custom field value if already present
+        if (exists $custom_fields{$cf_name}) {
+            $cf_struct->{id} = $custom_fields{$cf_name}->{id};
+        }
+
+        push @updated_values, $cf_struct;
+    }
+
+    my $res = $self->_talk('parties/' . $id, 'PUT', {
+        party => {
+            fields => \@updated_values,
+        },
+    });
+};
+
 1;
