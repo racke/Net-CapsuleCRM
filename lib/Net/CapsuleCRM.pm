@@ -30,6 +30,9 @@ has 'target_domain' => (is => 'rw', default => sub { 'api2.capsulecrm.com' } );
 has 'xmls' => ( is => 'rw', default => sub { return XML::Simple->new(
   NoAttr => 1, KeyAttr => [], XMLDecl => 1, SuppressEmpty => 1, ); }
 );
+has 'def_representation' => (is => 'ro', default => sub { 'hash' });
+
+our %def_cache = ();
 
 method endpoint_uri { return 'https://' . $self->target_domain . '/api/v2/'; }
 
@@ -249,12 +252,45 @@ method add_tag($id, @tags) {
 
 Returns definitions of custom fields for C<$entity>.
 
+The results are cached and can be overriden with settings C<$cache> parameter to 0.
+
 =cut
 
-method custom_fields_definitions ($entity) {
-    my $res = $self->_talk("$entity/fields/definitions", 'GET');
+method custom_fields_definitions ($entity, $cache = 1) {
+    my ($res, $defs);
 
-    return $res->{definitions};
+    if (exists $def_cache{$entity}) {
+        if ($cache) {
+            return $def_cache{$entity};
+        }
+        else {
+            delete $def_cache{$entity};
+        }
+    }
+
+    $res = $self->_talk("$entity/fields/definitions", 'GET');
+
+    if ($self->def_representation eq 'hash') {
+        # turn into a hash with field names as keys
+        my %custom_fields;
+
+        for my $entry (@{$res->{definitions}}) {
+            my $name = delete $entry->{name};
+
+            $custom_fields{$name} = $entry;
+        }
+
+        $defs = \%custom_fields;
+    }
+    else {
+        $defs = $res->{definitions};
+    }
+
+    if ($cache) {
+        $def_cache{$entity} = $defs;
+    }
+
+    return $defs;
 }
 
 1;
