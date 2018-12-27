@@ -115,6 +115,21 @@ method _talk($command,$method,$content?) {
   
 }
 
+=head2 search_parties
+
+Search parties with $q as search term.
+
+Returns array reference with the matching parties.
+
+=cut
+
+method search_parties($q) {
+    my $res = $self->_talk('parties/search', 'GET', {
+        q => $q,
+    });
+
+    return $res->{parties};
+}
 
 =head2 find_party_by_email
 
