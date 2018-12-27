@@ -189,9 +189,9 @@ find by id
 
 =cut
 
-method find_party($id) {
-  my $res = $self->_talk('party/'.$id, 'GET', $id);
-  return $res->{'parties'}->{'person'}->{'id'} || undef;
+method find_party($id, $options = {}) {
+  my $res = $self->_talk('parties/'.$id, 'GET', $options);
+  return $res->{'party'};
 }
 
 =head2 create_person
