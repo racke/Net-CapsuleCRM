@@ -245,5 +245,16 @@ method add_tag($id, @tags) {
   }
 }
 
+=head2 custom_fields_definitions
+
+Returns definitions of custom fields for C<$entity>.
+
+=cut
+
+method custom_fields_definitions ($entity) {
+    my $res = $self->_talk("$entity/fields/definitions", 'GET');
+
+    return $res->{definitions};
+}
 
 1;
