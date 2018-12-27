@@ -134,7 +134,6 @@ method _talk($command,$method,$content?) {
     if($res->status_line =~ /^201/) {
       return (split '/', $res->header('Location'))[-1]
     } else {
-      print $res->content. "\n" if $self->debug;
       if($type eq 'json') {
         return decode_json $res->content;
       } elsif($res->content) {
