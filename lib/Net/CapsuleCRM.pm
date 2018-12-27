@@ -44,16 +44,51 @@ method _talk($command,$method,$content?) {
 
   my $res;
   my $type = ref $content  eq 'HASH' ? 'json' : 'xml';
+
+    my $token = $self->token;
+
+    # common request parameters
+    my @req_params = (
+        Host => 'api.capsulecrm.com',
+        Authorization => "Bearer $token",
+    );
+
+    $type = 'json';
+
   if($method =~ /get/i){
     if(ref $content eq 'HASH') {
       $uri->query_form($content);
-    }
-    my $token = $self->token;
+  }
+
+    print "Uri: $uri\n" if $self->debug;
+
     my $request = HTTP::Request->new(
-        GET => $uri, [
-            Host => 'api.capsulecrm.com',
-            Authorization => "Bearer $token"],
+        GET => $uri,
+        \@req_params,
     );
+
+    if ($self->debug) {
+        print "Request: ", $request->as_string, "\n";
+    }
+
+    $res = $self->ua->request($request);
+
+    if ($self->debug) {
+        print "Response: ", $res->as_string, "\n";
+    }
+} elsif ($method =~ /put/i) {
+    push @req_params, Content_Type => 'application/json';
+
+    my $request = HTTP::Request->new(
+        PUT => $uri,
+        \@req_params,
+    );
+
+    print "Uri: $uri\n" if $self->debug;
+
+    my $json = encode_json $content;
+
+    $request->content($json);
 
     if ($self->debug) {
         print "Request: ", $request->as_string, "\n";
